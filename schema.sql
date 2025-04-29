@@ -8,7 +8,9 @@ CREATE TABLE tblAsesores (
         correo LIKE '_%@_%._%' -- Valida patrón básico: texto@texto.texto
     ),
     saldo_por_cobrar NUMERIC(10,2) DEFAULT 0 CHECK (saldo_por_cobrar >= 0),  -- Saldo por cobrar de matriculas que no se le han pagado (aumenta con trigger cada vez que se registra un pago de matricula de un alumno)
-    cedula VARCHAR(10) NOT NULL      -- Numero de cedula
+    cedula VARCHAR(10) NOT NULL,     -- Numero de cedula
+    azureBlob_id VARCHAR(120)             --id de imagen de foto de perfil del personal almacenada en Azure Blob Storage
+
 );
 
 
@@ -22,12 +24,12 @@ CREATE TABLE tblAlumnos (
     correo VARCHAR(255) UNIQUE NOT NULL CHECK (   -- Correo del asesor 
         correo LIKE '_%@_%._%'          -- Valida patrón básico: texto@texto.texto
     ),
-    documento_url TEXT NOT NULL,       --Enlace de carpeta con documentos
     observaciones TEXT NULL,            --Comentarios internos sobre el alumno
     fecha_inscripcion DATETIME DEFAULT CURRENT_TIMESTAMP, --fecha de inscripcion como alumno
     asesor_id INT NULL,                -- id del asesor encargado del registro (opcional)
-    cedula VARCHAR(10)                --numero de cedula del alumno
-    CONSTRAINT FK_asesor_id FOREIGN KEY (asesor_id) REFERENCES tblAsesores(id), --Referencia de la FK asesor_id
+    cedula VARCHAR(10),                --numero de cedula del alumno
+    azureBlob_id VARCHAR(120),           --id de imagen de foto de perfil de los alumnos almacenada en Azure Blob Storage
+    CONSTRAINT FK_asesor_id FOREIGN KEY (asesor_id) REFERENCES tblAsesores(id) --Referencia de la FK asesor_id
 );
 
 
@@ -77,7 +79,6 @@ CREATE TABLE tblPersonal(
         correo LIKE '_%@_%._%'          -- Valida patrón básico: texto@texto.texto
     ),
     direccion VARCHAR(255) NOT NULL,             --Direccion de domicilio del personal
-    documentacion_url TEXT DEFAULT NULL,         --Enlace a la carpeta con los documentos
     sueldo_mensual NUMERIC(10,2) NOT NULL,       --Sueldo mensual 
     rol VARCHAR(30) NOT NULL,                    --Rol que desempena en la organizacion
     sede_id INT,                                 --Id de la sede a la que pertenece el personal
@@ -86,7 +87,7 @@ CREATE TABLE tblPersonal(
     especialidad VARCHAR(30),
     CONSTRAINT CK_rol CHECK(rol IN ('secretaria','cajera','auxiliar','presidente','docente')), --Constrain para verificar el rol
     CONSTRAINT FK_sedePersonal_id FOREIGN KEY (sede_id) REFERENCES tblSedes(id),  --Constrain para FK sede_id
-    azureBlob_id VARCHAR(120)             --id de imagen de la sede almacenada en Azure Blob Storage
+    azureBlob_id VARCHAR(120)             --id de imagen de foto de perfil del personal almacenada en Azure Blob Storage
 );
 
 --Tabla de Transacciones
