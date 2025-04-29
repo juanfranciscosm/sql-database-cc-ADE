@@ -50,7 +50,8 @@ CREATE TABLE tblSedes(
     id INT IDENTITY(1,1) PRIMARY KEY,      --Identificador único, autoincremental     
     nombre VARCHAR(50) NOT NULL,            -- Nombre comercial de la sede
     direccion VARCHAR(255) NOT NULL,       -- Direccion de la sede
-    ciudad VARCHAR(255) NOT NULL           --Ciudad en la que se ubica la sede
+    ciudad VARCHAR(255) NOT NULL,           --Ciudad en la que se ubica la sede
+    azureBlob_id VARCHAR(120)             --id de imagen de la sede almacenada en Azure Blob Storage
 );
 
 
@@ -84,7 +85,8 @@ CREATE TABLE tblPersonal(
     fecha_vinculacion DATE NOT NULL,             --Fecha de inicio a trabajar (importante para el calculo de pago de salario)           
     especialidad VARCHAR(30),
     CONSTRAINT CK_rol CHECK(rol IN ('secretaria','cajera','auxiliar','presidente','docente')), --Constrain para verificar el rol
-    CONSTRAINT FK_sedePersonal_id FOREIGN KEY (sede_id) REFERENCES tblSedes(id)  --Constrain para FK sede_id
+    CONSTRAINT FK_sedePersonal_id FOREIGN KEY (sede_id) REFERENCES tblSedes(id),  --Constrain para FK sede_id
+    azureBlob_id VARCHAR(120)             --id de imagen de la sede almacenada en Azure Blob Storage
 );
 
 --Tabla de Transacciones
