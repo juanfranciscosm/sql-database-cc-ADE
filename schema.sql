@@ -1,9 +1,9 @@
   -- Tabla de datos de asesores
 CREATE TABLE tblAsesores (
     id INT IDENTITY(1,1) PRIMARY KEY, -- Identificador único, autoincremental
-    nombre VARCHAR(100) NOT NULL,      --Nombre y apellido del asesor
-    apellido VARCHAR(100) NOT NULL,
-    celular VARCHAR(20) NOT NULL,       --Numero celular del asesor
+    nombre VARCHAR(30) NOT NULL,      --Nombre y apellido del asesor
+    apellido VARCHAR(30) NOT NULL,
+    celular VARCHAR(12) NOT NULL,       --Numero celular del asesor
     correo VARCHAR(255) UNIQUE NOT NULL CHECK (   -- Correo del asesor 
         correo LIKE '_%@_%._%' -- Valida patrón básico: texto@texto.texto
     ),
@@ -11,13 +11,14 @@ CREATE TABLE tblAsesores (
     cedula VARCHAR(10) NOT NULL      -- Numero de cedula
 );
 
+
 -- Tabla de datos alumnos
 CREATE TABLE tblAlumnos (
     id INT IDENTITY(1,1) PRIMARY KEY,  -- Identificador único, autoincremental
-    nombre VARCHAR(100) NOT NULL,      -- Nombre y Apellido del alumno
-    apellido VARCHAR(100) NOT NULL,
+    nombre VARCHAR(30) NOT NULL,      -- Nombre y Apellido del alumno
+    apellido VARCHAR(30) NOT NULL,
     direccion VARCHAR(255) NOT NULL,   --direccion de domicilio del alumno
-    celular VARCHAR(20) NOT NULL,      --Numero celular del asesor
+    celular VARCHAR(12) NOT NULL,      --Numero celular del asesor
     correo VARCHAR(255) UNIQUE NOT NULL CHECK (   -- Correo del asesor 
         correo LIKE '_%@_%._%'          -- Valida patrón básico: texto@texto.texto
     ),
@@ -48,10 +49,8 @@ CREATE TABLE tblConceptosTransaccion(
 CREATE TABLE tblSedes(
     id INT IDENTITY(1,1) PRIMARY KEY,      --Identificador único, autoincremental     
     nombre VARCHAR(50) NOT NULL,            -- Nombre comercial de la sede
-    ubicacion GEOGRAPHY,                    -- Aquí se guarda la latitud y longitud
     direccion VARCHAR(255) NOT NULL,       -- Direccion de la sede
-    estado VARCHAR(20),                    --Estado actual de la sede
-    CONSTRAINT CK_estado CHECK(estado IN ('operativo','clausurado','inoperativo')) --Constraint para validar el estado
+    ciudad VARCHAR(255) NOT NULL           --Ciudad en la que se ubica la sede
 );
 
 
@@ -72,7 +71,7 @@ CREATE TABLE tblPersonal(
     id INT IDENTITY(1,1) PRIMARY KEY,           --Identificador único, autoincremental
     nombre VARCHAR(30) NOT NULL,               -- Nombre y apellido del personal administrativo
     apellido VARCHAR(30) NOT NULL,
-    celular VARCHAR(20) NOT NULL,              --Numero de telefono celular del personal
+    celular VARCHAR(12) NOT NULL,              --Numero de telefono celular del personal
     correo VARCHAR(255) UNIQUE NOT NULL CHECK (   -- Correo del asesor 
         correo LIKE '_%@_%._%'          -- Valida patrón básico: texto@texto.texto
     ),
@@ -180,3 +179,22 @@ BEGIN
     INNER JOIN tblConceptosTransaccion c ON i.concepto_id = c.id
     WHERE c.nombre = 'matriculacion';  -- Solo se ejecuta si el concepto de la transacción es 'matriculacion'
 END;
+
+
+
+
+
+
+
+
+--Queries para eliminar elementos de la base de datos por completo
+
+--1
+DECLARE @sql NVARCHAR(MAX) = (SELECT STRING_AGG('ALTER TABLE [' + s.name + '].[' + t.name + '] DROP CONSTRAINT [' + c.name + '];', ' ') FROM sys.foreign_keys c JOIN sys.tables t ON c.parent_object_id = t.object_id JOIN sys.schemas s ON t.schema_id = s.schema_id) + ' ' + (SELECT STRING_AGG('ALTER TABLE [' + s.name + '].[' + t.name + '] DROP CONSTRAINT [' + c.name + '];', ' ') FROM sys.objects c JOIN sys.tables t ON c.parent_object_id = t.object_id JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE c.type IN ('PK','UQ','C','D')); EXEC sp_executesql @sql;
+--2
+DECLARE @sql NVARCHAR(MAX) = (SELECT STRING_AGG('ALTER TABLE [' + s.name + '].[' + t.name + '] DROP CONSTRAINT [' + c.name + '];', ' ') FROM sys.objects c JOIN sys.tables t ON c.parent_object_id = t.object_id JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE c.type IN ('F','PK','UQ','C','D')); EXEC sp_executesql @sql;
+--3
+DECLARE @sql NVARCHAR(MAX) = (SELECT STRING_AGG('DROP TABLE [' + SCHEMA_NAME(schema_id) + '].[' + name + '];', ' ') FROM sys.tables);
+EXEC sp_executesql @sql;
+
+
