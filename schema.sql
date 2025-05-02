@@ -10,7 +10,6 @@ CREATE TABLE tblAsesores (
     saldo_por_cobrar NUMERIC(10,2) DEFAULT 0 CHECK (saldo_por_cobrar >= 0),  -- Saldo por cobrar de matriculas que no se le han pagado (aumenta con trigger cada vez que se registra un pago de matricula de un alumno)
     cedula VARCHAR(10) NOT NULL,     -- Numero de cedula
     azureBlob_id VARCHAR(120)             --id de imagen de foto de perfil del personal almacenada en Azure Blob Storage
-
 );
 
 
@@ -53,6 +52,11 @@ CREATE TABLE tblSedes(
     nombre VARCHAR(50) NOT NULL,            -- Nombre comercial de la sede
     direccion VARCHAR(255) NOT NULL,       -- Direccion de la sede
     ciudad VARCHAR(255) NOT NULL,           --Ciudad en la que se ubica la sede
+    lat DECIMAL(10,7),                      --Latitud y longitud para implementar geolocalizacion
+    lon DECIMAL(10,7),
+    fecha_creacion DATETIME DEFAULT GETDATE(), --Fecha de creacion del registro
+    activo BIT DEFAULT 1,                            --Indicador de si una sede esta operando o ya no esta operativa
+    abierto BIT DEFAULT 0,                           --Indica la si la sede esta atendiendo o no
     azureBlob_id VARCHAR(120)             --id de imagen de la sede almacenada en Azure Blob Storage
 );
 
